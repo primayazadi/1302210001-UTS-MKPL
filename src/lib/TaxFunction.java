@@ -54,22 +54,29 @@ public class TaxFunction {
         int deductible = taxInfo.getDeductible();
         boolean isMarried = taxInfo.isMarried();
         int numberOfChildren = taxInfo.getNumberOfChildren();
-        
-        // Calculation logic
+    
+        // Validasi bulan kerja
         if (numberOfMonthWorking > 12) {
-            System.err.println("More than 12 month working per year");
+            throw new IllegalArgumentException("Number of month working cannot be more than 12");
         }
-        
+    
+        // Validasi anak
         if (numberOfChildren > 3) {
             numberOfChildren = 3;
         }
-        
+    
+        // Hitung beban pajak
+        double taxableIncome = (monthlySalary + otherMonthlyIncome) * numberOfMonthWorking - deductible;
+        double taxableIncomeMarried = taxableIncome - (54000000 + 4500000 + (numberOfChildren * 1500000));
+        double taxableIncomeSingle = taxableIncome - 54000000;
+    
+        // Hitung pajak
         if (isMarried) {
-            tax = (int) Math.round(0.05 * (((monthlySalary + otherMonthlyIncome) * numberOfMonthWorking) - deductible - (54000000 + 4500000 + (numberOfChildren * 1500000))));
+            tax = (int) Math.round(taxableIncomeMarried * 0.05);
         } else {
-            tax = (int) Math.round(0.05 * (((monthlySalary + otherMonthlyIncome) * numberOfMonthWorking) - deductible - 54000000));
+            tax = (int) Math.round(taxableIncomeSingle * 0.05);
         }
-        
+    
         if (tax < 0) {
             return 0;
         } else {
